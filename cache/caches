@@ -241,12 +241,36 @@
 				
 
 	* [[TLB]]
+
+
+		* Content-addressable memory [https://en.wikipedia.org/wiki/Content-addressable_memory]:
 			
 			
+	* Instruction-level parallelism [https://en.wikipedia.org/wiki/Instruction-level_parallelism]:
+	(how many instructions can be excuted simultaneously)
+
+		** Techniques that are used to exploit ILP:
+		
+			* Out-of-order execution
+                        * Instruction pipelining
+                        * Branch prediction
+                        * Speculative execution
+                        * Register renaming
+                        * Superscalar execution	
+
+
+		** Example:
+
+			1) e = a + b
+			2) f = c + d
+			3) m = e * f
+
+			Operations [1] and [2] can be calculated simultaneously.
+			So if every operations takes one unit of time, it can be done in 2 units.
 			
 
 
-	* Order of execution
+	** Order of execution
 	[http://courses.cs.washington.edu/courses/csep548/06au/lectures/introOOO.pdf]
 	[https://en.wikipedia.org/wiki/Out-of-order_execution]
 
@@ -275,7 +299,20 @@
 			but "data order" was used.
 			
 
-	* Hyper-threading [https://en.wikipedia.org/wiki/Hyper-threading]
+
+	** Instruction Pipeline [https://en.wikipedia.org/wiki/Instruction_pipelining]:
+		
+		* Implements a form of parallelism called instruction-level parallelism
+		within a single processor
+		
+		* Instruction cycle is broken up into a series called a peipeline
+
+
+		** Instruction cycle [https://en.wikipedia.org/wiki/Instruction_cycle]:
+
+	
+	** Branch prediction [https://en.wikipedia.org/wiki/Branch_predictor]:
+
 
 
 	* Branch misprediction [https://en.wikipedia.org/wiki/Branch_misprediction]:
@@ -285,6 +322,7 @@
 		and the pipeline has to start over at the correct branch when a branch misprediction is detected.
 			
 
+	* Hyper-threading [https://en.wikipedia.org/wiki/Hyper-threading]
 		
 
 		
