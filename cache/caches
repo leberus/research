@@ -1,0 +1,291 @@
+
+
+* Multilevel caching
+
+	* L1 [data-cache / instruction-cached - each CPU has a dedicated L1]
+	* L2 [larger than L1, usually common repo of L1-dcache and L1-icache - each CPU has a dedicated L2]
+	* L3 [larger than L2 - shared among cores]
+	* L4 [uncommon, usually on DRAM rather than on SRAM, on a separate die or chip]
+
+	* Caches are generally sized in powers of 2: 4, 8, 16 KiB or MiB for larger non-L1 sizes.
+
+	
+	* When a processor need to read from or write to a location in main memory, if first
+	checks wether a copy of the data is alrady in cache.
+	* Most modern CPUs have at least three independent cacges: I-cache, D-cache, TLB.
+
+	* Data is transferred between memory and cach in blocks of fixed size called: cache lines/blocks.
+	* When a cache line is copied from main memory to cache, a cache entry is created. 
+	Cache entry contains:
+
+		* Copied data
+		* tag (requested memory location)
+
+	* When processor needs to read or write a location in main memory, it checks for the contents of the
+	requested memory location in any cache lines.
+	* For a cache miss, the cache allocates a new entry and copies de data from main memory, so the
+	request is fulfilled from the contents of the cache.
+
+	
+	* Replacement policies must take into account, f.i LRU
+	Marking some memory ranges as non-cacheable can improve performance, by avoiding caching memory regions
+	that are rarely re-accessed.
+
+	* Write policies:
+
+		* In a write-through cache, every write to the cache causes a write to the main memory
+		* In a write-back, writes are being held and cache keeps track of which locations have
+		been written over, marking them as dirty.
+
+		* Intermediate policies as: cache can be write-through but the writes may be held in a
+		store data queue temporarily, so that multiple stores can be processed together
+		(which improves bus utilization)
+
+		* Cache data from the main memory can be changed by other entities like DMA or another
+		multi-core processor.
+		To avoid conflichts, a cache-coheren protocols are needed (https://en.wikipedia.org/wiki/Cache_coherence)
+
+	* CPU stalls:
+
+		* Modern CPU's can executed hunders of instructions in the time taken to fetch a single
+		cache line from main memory.
+		* Various techniques have been employed to keep the CPU busy during this time, like:
+		out-of-order execution where the CPU attemps to execute independent instructions after
+		the instruction that is waiting for the cache miss data.
+		* Other technologies for that is: SMT/HT (hyper threading) https://en.wikipedia.org/wiki/Hyper-threading
+		This allows an alternate thread to use the CPU while the first thread waits for the required
+		CPU resources to become available.
+
+	* Cache entry structure:
+
+		* Cache row entries usually have the following structure
+
+
+		[tag][data-block][flag-bits]
+
+		** data-block: contains the actual data fetched from the main memory
+		** tag: contains part of the address of the actual fetched data from the main memory
+
+		* Size of the cache is the amount of main memory data it can hold.
+		size = number-of-bytes-stored-in-each-data-block * number-of-blocks-stored-in-cache
+
+
+		* An effective memory address which goes along with the cache line (memory block)
+		is split (MSB- most significant bit to LSB- less significant bit) into (tag, index, block offset)
+
+		[tag][index][block-offset]
+
+		* index describes which cache row (cache line) the data has been put in.
+		index lenght is log2(r) bits for r cache rows.
+
+		* block-offset specifies the desired data within the stored data block within the cache row.
+		Effective address is in bytes, so block-offset lenght is log2(b) bits, where b is the number
+		of bytes per data block.
+
+		* tag: contains the most significant bits of the address, which are checked against the current row
+		(the row has been retrieved by index) to see if it is the one we need or another memory location
+		that happened to have the same index bits as the one we want.
+		tag lenght in bits is:
+			address_length - index_length - block_offset_length
+
+
+		*** Example:
+		
+			[pentium-4 4-way set associative L1 data cache]
+
+			L1: 8Kib size, 64-byte cache blocks
+
+			8KiB / 64-byte = 128 cache blocks
+
+			** Number of sets = number-cache-blocks / number-ways-associativity
+
+			128 / 4 = 32 sets  [ 2^5 = 32 different indices , 5bits for index ]
+
+
+			** Block-offset length:
+
+			log2(64bytes per cache block) = 2^6 = 64 [6bits for block-offset]
+
+
+			** Tag length:
+
+			tag length = 32(bits address) - 6(bits block-offset) - 5(bits index) = 21bits
+
+			
+			
+			[pentium-4 8-way set associative L2 integrated cache]
+
+			L2: 256KiB size, 128-byte cache blocks
+			256KiB / 128-bytes = 2048 cache blocks
+
+			** number of sets = number-cache-blocks / number-ways-associativity
+
+			2048 / 8 = 256sets [ 2^8 = 256 different indices, 8bits per index ]
+
+
+			** Block-offset length:
+
+			log2(128bytes per cache block) = 2^7 = 128 [7bits for block-offset]
+
+			** Tag length:
+
+			tag length = 32bits - 7 - 8 = 17bits for tag
+
+
+	
+		* Flag bits:
+
+			* I-cache needs only one flag bit per cache row entry: a valid bit.
+			This indicates wether or not a cache-block has been loaded with valid data.
+			On power-up, the hardware sets all the valid bits in all caches to invalid.
+
+			* D-cache needs two bits: dirty and valid.
+			Dirty bit: associated cache line has been changed since it was read from main memory.
+			
+
+	* Associativity:
+
+		* Replacement policy decided where in the cache a copy of a particular
+		entry of main memory will go.
+		* Types of cache:
+
+			* fully-associative: Replacement policy can choose any entry in the cache
+
+			* direct-mapped: Each entry in main memory can go in just one place in the cache
+
+				** Each location in main memory can be cached by just one cache location
+				** Example:
+
+				[Main memory]			[Cache memory]
+				[   Index   ]			
+				[          0] ----------------> [Index 0     ]
+				[          1]		|	[Index 1     ]
+				[          2]------------	[Index 2     ]
+				[          3]----------------->	[Index 3     ]
+
+
+			* X-way associative: Each entry in main memory can go to any of X places in the cache.
+
+				** Example 2-way associative
+				** Each location in main memory can be cached by one of two cache entries
+
+
+				[Main memory]
+				[   Index   ]
+				[	   0] ---------------->	[Index 0, Way 0]	
+				[	   1]		    |	[Index 0, Way 1]	
+				[	   2]		    |->	[Index 1, Way 0]	
+
+				[	   3] ---------------->	[Index 1, Way 1]	
+				[	   4] 		    |->	[Index 2, Way 0]	
+
+
+			* Choosing the right value of associativity invovles trade-off.
+
+			f.i 10-way associative cache: 
+				* wost-case: ten cache entries must be searched [more power/time needed]
+				* best case: suffers fewer misses [CPU wastes less time reading main memory]
+
+				
+
+			* Some CPUs can dynamically reduce the associativity of their caches in low-power states
+	
+
+		* Direct-mapped cache [also called one-way set associative]:
+
+			* Needs to be much larger than an associative one to give comparable performance
+			* Each location in main memory can go in only one entry in cache.
+			x -> block number in cache
+			y -> block number of memory
+			n -> number blocks in cache
+			x = y % n
+
+
+		* Two-way set associative cache:
+
+			* Use least significant bits of the memory locations'index as the index
+			for the cache memory, and to have two entires for each index.
+			* Tags stored in the cache don't have to contain that part of the main
+			memory address, which is implied by cache memory's index.
+			So cache tags:
+				have fewer bits 
+				have fewer transistors
+				take less space on the PCB
+				can be read/compared faster
+			LRU is simple since only one bit needs to be stored for each pair.
+
+
+	* Cache miss:
+
+		* Is a failed attempt to read/write a pice of data in the cache, so the request needs
+		to go to the main memory, which results in a longer latency.
+
+		* Three kinds of cache misses:
+
+		** Instruction read miss:
+			* Usually causes the largest delay
+			* Processor/thread has to wait(stall) until the instruction is fetched from main memory
+
+		** Data read miss:
+			* Usually causes a smaller delay
+			* Instructions not dependent on the cache read can be issued and continued
+			execution until the data is returned from main memory, and the dependent
+			instructions can resume execution
+
+		** Data write miss:
+			* Usually causes the shortest delay
+			* Writes can be queued, so processor can continue until the queue is full
+
+
+	* Cache design [http://cseweb.ucsd.edu/classes/fa10/cse240a/pdf/08/CSE240A-MBT-L15-Cache.ppt.pdf]
+				
+
+	* [[TLB]]
+			
+			
+			
+
+
+	* Order of execution
+	[http://courses.cs.washington.edu/courses/csep548/06au/lectures/introOOO.pdf]
+	[https://en.wikipedia.org/wiki/Out-of-order_execution]
+
+		* In-order:
+
+			1) Instruction fetch
+			2) If input operants are available: 
+				2a-yes) the instruction is dispatched to the appropiate functional unit.
+				2b-no)  operands are unavailable during the current clock cycle,
+				 	the processor stalls until they are available.
+			3) The instruction is executed by the appropiate function unit
+			4) The functional unit writes the results back to the register file
+
+		* Out-of-order:
+
+			1) Instruction fetch
+			2) Instruction dispatched to an instruction queue (instruction buffer)
+			3) Instruction waits in the queue until its input operands are available.
+			The instruction is allowed to leave the queue before earlier, older instructions
+			4) Instruction is issued to the appropiate functional unit and executed by that unit
+			5) The results are queued
+			6) Only after all order instructions have their results written back to the register file,
+			then this result is written back to the register file (retire stage)
+
+			OoOEre-orders the results at the end to make it appear that it was in "program order",
+			but "data order" was used.
+			
+
+	* Hyper-threading [https://en.wikipedia.org/wiki/Hyper-threading]
+
+
+	* Branch misprediction [https://en.wikipedia.org/wiki/Branch_misprediction]:
+
+		* When CPU mispredicts the next instruction to process in branch prediction.
+		The partially processed instructions in the pipeline after the branch have to be discarded
+		and the pipeline has to start over at the correct branch when a branch misprediction is detected.
+			
+
+		
+
+		
+		
