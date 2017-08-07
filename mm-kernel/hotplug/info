@@ -1,0 +1,31 @@
+* every memory section (32768 pages -> 128MB) is represented as :
+
+	# /sys/devices/system/memory/memoryXX
+
+* block_size of every mem_section -> /sys/devices/system/memory/block_size_bytes
+	# cat /sys/devices/system/memory/block_size_bytes
+	8000000 -> 134217728 bytes
+
+
+
+PNP0C80 -> ACPI memory devices
+
+-----------
+
+PNP0C80:03 -> Memory associated
+
+
+/sys/devices/system/memory/memory101/firmware_node -> ../../../LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03
+
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node10 -> ../../../../../system/memory/memory12
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node100 -> ../../../../../system/memory/memory102
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node101 -> ../../../../../system/memory/memory103
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node102 -> ../../../../../system/memory/memory104
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node103 -> ../../../../../system/memory/memory105
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node104 -> ../../../../../system/memory/memory106
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node105 -> ../../../../../system/memory/memory107
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node106 -> ../../../../../system/memory/memory108
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node107 -> ../../../../../system/memory/memory109
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A05:01/PNP0A05:02/PNP0C80:03/physical_node108 -> ../../../../../system/memory/memory110
+
+-----------

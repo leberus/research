@@ -1,0 +1,50 @@
+0x00005c8315cc2016
+
+L4: Page Map Level 4
+L3: Page directory Pointer
+L2: Page directory
+L1: Page Table
+
+
+   [L4]		  [L3]		   [L2]		  [L1]		[page offset]
+ 10111001   	000001100    	010101110   	011000010 	000000010110
+
+
+    0xb9	   0xc		   0xae		   0xc2		    0x16
+
+	* MMU Cache
+		* Lessen the penalty of a TLB miss and the cost of
+		walking the page tables
+
+
+	* Translation caching
+	* Page Walk
+
+	
+
+	* Page table Caches:
+
+		* Unified Page Table Cache [UPTC][Used in mordern AMD x86-64 processors]
+			* Tagged by their physical address in memory
+			* Entries from different levels of the page table are mixed
+
+		* Split Page Table Cache [SPTC]
+
+
+	* Translation Caches:
+
+		* Split Translation Cache [STC][Used in modern Intel x86-64 processors]
+
+		* Unified Translation Cache [UTC]
+
+		* Translation-Path Cache [TPC]
+
+	* Divided by:
+
+		* Indexing:
+
+		* Partitioning:
+
+
+
+

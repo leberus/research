@@ -1,0 +1,101 @@
+
+arch/x86/boot/main.c
+arch/x86/boot/pmjump.S
+arch/x86/boot/compressed/head_64.S
+arch/x86/boot/compressed/misc.c
+arch/x86/kernel/head64.c
+init/main.c
+	arch/x86/kernel/setup.c
+
+
+start_arch()
+
+	- we reserve memory from __text to __bss_stop with memblock (51mb)
+	  sections can be found: arch/x86/kernel/vmlinux.lds.S
+
+	 memblock_reserve: [0x00000000170af000-0x00000000170bbfff] setup_arch+0x5e2/0xc96
+
+	- we reserve memory for the initrd image
+
+
+
+
+struct e820_entry {
+	u64			addr;
+	u64			size;
+	enum e820_type		type;
+} __attribute__((packed));
+
+
+struct e820_table {
+	__u32 nr_entries;
+	struct e820_entry entries[E820_MAX_ENTRIES];
+};
+
+e820__memory_setup()
+  e820__memory_setup_default()
+    __append_e820_table ()
+      e820__range_add()
+   	__e820__range_add()
+
+
+init_mm.start_code = (unsigned long) _text;
+init_mm.end_code = (unsigned long) _etext;
+init_mm.end_data = (unsigned long) _edata;
+init_mm.brk = _brk_end;
+
+
+max_pfn = e820__end_of_ram_pfn();
+
+e820: last_pfn = 0x24e000 max_arch_pfn = 0x400000000
+
+0x400000000 = (1 << 46) >> 12
+0x24e000 = 9898557440/1024/1024/1024 = 8GB ram
+
+
+
+e820: last_pfn = 0x9d08d max_arch_pfn = 0x400000000	<- max low pfn below 4GB
+
+1UL << (32 - PAGE_SHIFT) = pfn for 4GB
+
+
+
+high_memory = (void *)__va(max_pfn * PAGE_SIZE - 1) + 1;	(highest ram we have)
+
+__va(0x24e000 * 4096 - 1) =  __va(0x24dffffff) = 
+
+0x24dffffff + 0xffff880000000000 = 0xffff88024dffffffL (direct mapping of all phys memory)
+
+
+
+max_low_pfn = 0x9d08d (2GB)
+
+early_alloc_pgt_buf()
+
+	tables = 12 * 4096 = 49152 bytes (48mb)
+	_brk_end += 48mb
+
+
+reserve_brk()
+	memblock_reserve for _brk area:
+
+	memblock_reserve(__pa_symbol(_brk_start), _brk_end - _brk_start);
+
+
+cleanup_highmap()
+	clears mappings that are < _text || > _end
+
+
+init_mem_mapping()
+
+	**!!
+	
+	
+
+
+
+
+
+
+
+    

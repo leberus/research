@@ -1,0 +1,19 @@
+
+	* TLB prefetching techniques:
+
+		* Sequential Prefetching: Prefetches the previous and next page table entries based
+		on the current reference.
+			
+		* Recency based Prefetching: This works on the principle that pages references at around the same
+		time in the past will also be referenced at around the same time in the future.
+		LRU stack is used to implement this.
+		It maintains a logical ordering of accesses: most recent translations are at the top and the least
+		recent ar at the bottom.
+
+		* Distance base Prefetching:		
+
+
+
+[Notes]
+
+* What is a prefetch buffer?

@@ -1,0 +1,182 @@
+[BIOS]
+
+Sep 21 14:44:29 localhost kernel: e820: BIOS-provided physical RAM map:
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x0000000000000000-0x00000000000907ff] usable
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x0000000000090800-0x000000000009ffff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000000e0000-0x00000000000fffff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x0000000000100000-0x000000009d08cfff] usable
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x000000009d08d000-0x000000009d08dfff] ACPI NVS
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x000000009d08e000-0x00000000ab6ebfff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000ab6ec000-0x00000000ab739fff] ACPI data
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000ab73a000-0x00000000abef3fff] ACPI NVS
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000abef4000-0x00000000ac5fffff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000f0000000-0x00000000f7ffffff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000fe000000-0x00000000fe010fff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000fec00000-0x00000000fec00fff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x00000000ff000000-0x00000000ffffffff] reserved
+Sep 21 14:44:29 localhost kernel: BIOS-e820: [mem 0x0000000100000000-0x000000024dffffff] usable
+
+Sep 21 14:44:29 localhost kernel: e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+Sep 21 14:44:29 localhost kernel: e820: remove [mem 0x000a0000-0x000fffff] usable
+Sep 21 14:44:29 localhost kernel: e820: last_pfn = 0x24e000 max_arch_pfn = 0x400000000
+
+Sep 21 14:44:29 localhost kernel: e820: last_pfn = 0x9d08d max_arch_pfn = 0x400000000			<-- lowmem
+
+Sep 21 14:44:29 localhost kernel: found SMP MP-table at [mem 0x000fcd60-0x000fcd6f] mapped at [ffffffffff000d60]
+
+[MEMBLOCK]
+
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x00000000000fcd60-0x00000000000fcd6f] smp_scan_config+0xd0/0x102
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x00000000000fcb50-0x00000000000fccf3] smp_scan_config+0xed/0x102
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x00000002210c4000-0x00000002210d0fff] setup_arch+0x5dc/0xcab
+Sep 21 14:31:27 localhost kernel: memblock_add: [0x0000000000001000-0x00000000000907ff] e820__memblock_setup+0x42/0x61
+Sep 21 14:31:27 localhost kernel: memblock_add: [0x0000000000100000-0x000000009d08cfff] e820__memblock_setup+0x42/0x61
+Sep 21 14:31:27 localhost kernel: memblock_add: [0x0000000100000000-0x000000024dffffff] e820__memblock_setup+0x42/0x61
+Sep 21 14:31:27 localhost kernel: MEMBLOCK configuration:
+Sep 21 14:31:27 localhost kernel:  memory size = 0x00000001eb01c800 reserved size = 0x0000000001b6b1b4
+Sep 21 14:31:27 localhost kernel:  memory.cnt  = 0x3
+Sep 21 14:31:27 localhost kernel:  memory[0x0]        [0x0000000000001000-0x000000000008ffff], 0x000000000008f000 bytes flags: 0x0
+Sep 21 14:31:27 localhost kernel:  memory[0x1]        [0x0000000000100000-0x000000009d08cfff], 0x000000009cf8d000 bytes flags: 0x0
+Sep 21 14:31:27 localhost kernel:  memory[0x2]        [0x0000000100000000-0x000000024dffffff], 0x000000014e000000 bytes flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved.cnt  = 0x4
+Sep 21 14:31:27 localhost kernel:  reserved[0x0]        [0x00000000000fcb50-0x00000000000fccf3], 0x00000000000001a4 bytes flags: 0x
+Sep 21 14:31:27 localhost kernel:  reserved[0x1]        [0x00000000000fcd60-0x00000000000fcd6f], 0x0000000000000010 bytes flags: 0x
+Sep 21 14:31:27 localhost kernel:  reserved[0x2]        [0x0000000036abb000-0x0000000037554fff], 0x0000000000a9a000 bytes flags: 0x
+Sep 21 14:31:27 localhost kernel:  reserved[0x3]        [0x0000000220000000-0x00000002210d0fff], 0x00000000010d1000 bytes flags: 0x
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x0000000000090800-0x00000000000fffff] setup_arch+0x60e/0xcab
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x0000000000001000-0x000000000000ffff] setup_bios_corruption_check+0xfa/0x195
+Sep 21 14:31:27 localhost kernel: Scanning 1 areas for low memory corruption
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000000008a000-0x000000000008ffff] reserve_real_mode+0x6a/0x7a
+Sep 21 14:31:27 localhost kernel: Base memory trampoline at [ffff92504008a000] 8a000 size 24576
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x0000000000000000-0x000000000000ffff] setup_arch+0x6f7/0xcab
+
+[KERNEL]
+
+Sep 21 14:44:29 localhost kernel: Using GB pages for direct mapping
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0c5000, 0x22f0c5fff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0c6000, 0x22f0c6fff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0c7000, 0x22f0c7fff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0c8000, 0x22f0c8fff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0c9000, 0x22f0c9fff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0ca000, 0x22f0cafff] PGTABLE
+Sep 21 14:44:29 localhost kernel: BRK [0x22f0cb000, 0x22f0cbfff] PGTABLE
+
+[RAMDISK]
+
+Sep 21 14:44:29 localhost kernel: RAMDISK: [mem 0x36abb000-0x37554fff]
+
+
+[KERNEL]
+
+Sep 21 14:44:29 localhost kernel: No NUMA configuration found
+Sep 21 14:44:29 localhost kernel: Faking a node at [mem 0x0000000000000000-0x000000024dffffff]
+Sep 21 14:44:29 localhost kernel: NODE_DATA(0) allocated [mem 0x24dfea000-0x24dffffff]
+
+[MEMBLOCK]
+
+Sep 21 14:31:27 localhost kernel: MEMBLOCK configuration:
+Sep 21 14:31:27 localhost kernel:  memory size = 0x00000001eb01c800 reserved size = 0x0000000001c06800
+Sep 21 14:31:27 localhost kernel:  memory.cnt  = 0x3
+Sep 21 14:31:27 localhost kernel:  memory[0x0]        [0x0000000000001000-0x000000000008ffff], 0x000000000008f000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  memory[0x1]        [0x0000000000100000-0x000000009d08cfff], 0x000000009cf8d000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  memory[0x2]        [0x0000000100000000-0x000000024dffffff], 0x000000014e000000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved.cnt  = 0x6
+Sep 21 14:31:27 localhost kernel:  reserved[0x0]        [0x0000000000000000-0x000000000000ffff], 0x0000000000010000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved[0x1]        [0x000000000008a000-0x000000000008ffff], 0x0000000000006000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved[0x2]        [0x0000000000090800-0x00000000000fffff], 0x000000000006f800 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved[0x3]        [0x0000000036abb000-0x0000000037554fff], 0x0000000000a9a000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved[0x4]        [0x0000000220000000-0x00000002210d0fff], 0x00000000010d1000 bytes on node 0 flags: 0x0
+Sep 21 14:31:27 localhost kernel:  reserved[0x5]        [0x000000024dfea000-0x000000024dffffff], 0x0000000000016000 bytes flags: 0x0
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 4096 bytes align=0x0 nid=0 from=0x0 max_addr=0x0 memory_present+0x67/0xb0
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024dfe9000-0x000000024dfe9fff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 4194304 bytes align=0x0 nid=-1 from=0x0 max_addr=0x0 sparse_init+0x20/0x168
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024dbe9000-0x000000024dfe8fff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid_nopanic: 1984 bytes align=0x40 nid=0 from=0x248000000 max_addr=0x250000000 sparse_early_usemaps_alloc_node+0x8d/0x202
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024dbe8840-0x000000024dbe8fff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 4194304 bytes align=0x0 nid=-1 from=0x0 max_addr=0x0 sparse_init+0x59/0x168
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024d7e8840-0x000000024dbe883f] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 130023424 bytes align=0x200000 nid=0 from=0x1000000 max_addr=0x0 sparse_mem_maps_populate_node+0x66/0x168
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x0000000245a00000-0x000000024d5fffff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 4096 bytes align=0x1000 nid=0 from=0x1000000 max_addr=0x0 vmemmap_p4d_populate+0x23/0xa6
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024d7e7000-0x000000024d7e7fff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: memblock_virt_alloc_try_nid: 4096 bytes align=0x1000 nid=0 from=0x1000000 max_addr=0x0 vmemmap_pud_populate+0x50/0xd5
+Sep 21 14:31:27 localhost kernel: memblock_reserve: [0x000000024d7e6000-0x000000024d7e6fff] memblock_virt_alloc_internal+0xc4/0x14f
+Sep 21 14:31:27 localhost kernel: __memblock_free_early: [0x0000024d600000-0x0000024d5fffff] sparse_mem_maps_populate_node+0xf9/0x168
+Sep 21 14:31:27 localhost kernel: __memblock_free_early: [0x0000024d7e8840-0x0000024dbe883f] sparse_init+0x118/0x168
+Sep 21 14:31:27 localhost kernel: __memblock_free_early: [0x0000024dbe9000-0x0000024dfe8fff] paging_init+0x14/0x31
+
+[KERNEL]
+
+Sep 21 14:44:29 localhost kernel: Zone ranges:
+Sep 21 14:44:29 localhost kernel:   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+Sep 21 14:44:29 localhost kernel:   DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+Sep 21 14:44:29 localhost kernel:   Normal   [mem 0x0000000100000000-0x000000024dffffff]
+Sep 21 14:44:29 localhost kernel:   Device   empty
+Sep 21 14:44:29 localhost kernel: Movable zone start for each node
+Sep 21 14:44:29 localhost kernel: Early memory node ranges
+Sep 21 14:44:29 localhost kernel:   node   0: [mem 0x0000000000001000-0x000000000008ffff]
+Sep 21 14:44:29 localhost kernel:   node   0: [mem 0x0000000000100000-0x000000009d08cfff]
+Sep 21 14:44:29 localhost kernel:   node   0: [mem 0x0000000100000000-0x000000024dffffff]
+
+Sep 21 14:44:29 localhost kernel: Initmem setup node 0 [mem 0x0000000000001000-0x000000024dffffff]
+Sep 21 14:44:29 localhost kernel: On node 0 totalpages: 2011164
+
+Sep 21 14:44:29 localhost kernel: reset_deferred_meminit: max_initialise: 0x80000			2GB
+Sep 21 14:44:29 localhost kernel: reset_deferred_meminit: 0x1 - 0x80001
+Sep 21 14:44:29 localhost kernel: memblock_reserved_memory_within: start: 0x1, end: 0x80001
+Sep 21 14:44:29 localhost kernel: reset_deferred_meminit: reserved_lowmem: 0x10000
+Sep 21 14:44:29 localhost kernel: reset_deferred_meminit: pgdat->static_init_size: 0x90000
+
+[DMA]
+Sep 21 14:44:29 localhost kernel: free_area_init_core: freesize: 3983
+Sep 21 14:44:29 localhost kernel: calc_memmap_size: spanned: 0xfff - present: 0xf8f
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after memmap freesize: 3919
+Sep 21 14:44:29 localhost kernel:   DMA zone: 64 pages used for memmap
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after dma_serve freesize: 3898
+Sep 21 14:44:29 localhost kernel:   DMA zone: 21 pages reserved
+Sep 21 14:44:29 localhost kernel: free_area_init_core: zone->managed_pages: 3898
+Sep 21 14:44:29 localhost kernel: zone_pcp_init: zone: DMA - 0x16800 - 0x16800
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 3
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 0 rounded
+Sep 21 14:44:29 localhost kernel:   DMA zone: 3983 pages, LIFO batch:0
+
+[DMA32]
+Sep 21 14:44:29 localhost kernel: free_area_init_core: freesize: 639117
+Sep 21 14:44:29 localhost kernel: calc_memmap_size: spanned: 0xff000 - present: 0x9c08d
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after memmap freesize: 629130
+Sep 21 14:44:29 localhost kernel:   DMA32 zone: 9987 pages used for memmap
+Sep 21 14:44:29 localhost kernel: free_area_init_core: zone->managed_pages: 629130
+Sep 21 14:44:29 localhost kernel: zone_pcp_init: zone: DMA32 - 0x16800 - 0x16800
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 128
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 31 rounded
+Sep 21 14:44:29 localhost kernel:   DMA32 zone: 639117 pages, LIFO batch:31
+
+[NORMAL]
+Sep 21 14:44:29 localhost kernel: free_area_init_core: freesize: 1368064
+Sep 21 14:44:29 localhost kernel: calc_memmap_size: spanned: 0x14e000 - present: 0x14e000
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after memmap freesize: 1346688
+Sep 21 14:44:29 localhost kernel:   Normal zone: 21376 pages used for memmap
+Sep 21 14:44:29 localhost kernel: free_area_init_core: zone->managed_pages: 1346688
+Sep 21 14:44:29 localhost kernel: zone_pcp_init: zone: Normal - 0x16800 - 0x16800
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 128
+Sep 21 14:44:29 localhost kernel: zone_batchsize: batch: 31 rounded
+Sep 21 14:44:29 localhost kernel:   Normal zone: 1368064 pages, LIFO batch:31
+
+[MOVABLE]
+Sep 21 14:44:29 localhost kernel: free_area_init_core: freesize: 0
+Sep 21 14:44:29 localhost kernel: calc_memmap_size: spanned: 0x0 - present: 0x0
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after memmap freesize: 0
+Sep 21 14:44:29 localhost kernel: free_area_init_core: zone->managed_pages: 0
+Sep 21 14:44:29 localhost kernel: zone_pcp_init: zone: Movable - 0x16800 - 0x16800
+
+[DEVICE]
+Sep 21 14:44:29 localhost kernel: free_area_init_core: freesize: 0
+Sep 21 14:44:29 localhost kernel: calc_memmap_size: spanned: 0x0 - present: 0x0
+Sep 21 14:44:29 localhost kernel: free_area_init_core: after memmap freesize: 0
+Sep 21 14:44:29 localhost kernel: free_area_init_core: zone->managed_pages: 0
+Sep 21 14:44:29 localhost kernel: zone_pcp_init: zone: Device - 0x16800 - 0x16800
+
+Sep 21 14:44:29 localhost kernel: free_area_init_core: nr_all_pages: 1979716
+Sep 21 14:44:29 localhost kernel: free_area_init_core: nr_kernel_pages: 1979716
+

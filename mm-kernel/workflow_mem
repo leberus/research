@@ -1,0 +1,33 @@
+
+- assembly page tables
+- bios get memory overview
+- memblock reservations
+
+setup_arch()
+ init_mem_mapping()
+ initmem_init()
+  x86_numa_init()
+   dummy_numa_init()
+    node_set()
+    numa_add_memblk()
+
+ x86_init.paging.pagetable_init() (paging_init) 
+  zone_sizes_init()
+   free_area_init_nodes()
+    free_area_init_node()  [init pgdat struct]
+     calculate_node_totalpages()
+     alloc_node_mem_map() if enabled!       ************* check!!
+     reset_deferred_meminit()
+     free_area_init_core()		 ********** try to check memmap_pages = calc_memmap_size(size, realsize)
+      calc_memmap_size()
+      zone_pcp_init()
+      set_pageblock_order()
+      setup_usemap()
+      init_currently_empty_zone()
+       zone_init_free_lists()
+      memmap_init()
+       update_defer_init()		********** defer the other
+       [__init_single_page
+        set_pageblock_migratetype]
+	or
+       [__init_single_pfn]

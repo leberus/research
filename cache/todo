@@ -1,0 +1,42 @@
+* x86 CPU how handles tlb miss, page table walk or page table cache in mmu cache?
+
+* branch prediction
+* branch missprediction
+* cache/tlb prefetch	
+* instruction Pipeline
+* hyperthreading
+
+
+http://www.agner.org/optimize/microarchitecture.pdf 		[All architectures explained]
+http://www.agner.org/optimize/optimizing_assembly.pdf		[Optiming subroutines in assembly + Improve cache]
+http://www.cs.rochester.edu/users/faculty/sandhya/csc252/lectures/lecture-memopt.pdf	[Cache Friendly code]
+
+https://software.intel.com/sites/default/files/managed/7c/f1/253668-sdm-vol-3a.pdf
+https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-optimization-manual.html
+
+
+http://www.cs.columbia.edu/~krj/os/lectures/L17-LinuxPaging.pdf
+https://link.springer.com/chapter/10.1007/978-3-540-39864-6_24 	[variable radix page table]
+https://lwn.net/Articles/717293/ 				[5 level page tables]
+
+
+https://hungys.xyz/linux-kernel-memory-addressing/
+https://cs.stackexchange.com/questions/42428/page-table-size-in-a-4-level-hierarchical-page-table
+http://inst.eecs.berkeley.edu/~cs162/sp11/sections/cs162-sp11-section6-answers.pdf
+https://en.wikipedia.org/wiki/X86-64#Virtual_address_space_details
+ftp://ftp.cs.wisc.edu/markhill/Papers/sosp95_pagetables.pdf		[A new page table for 64bits systems]
+
+
+
+https://www.youtube.com/watch?v=hgcNM-6wr34
+
+Test branch prediction (https://software.intel.com/en-us/intel-vtune-amplifier-xe ?)
+
+
+[done]
+http://blog.stuffedcow.net/2015/08/pagewalk-coherence/		[Pagewalk Coherence]
+http://mrmgroup.cs.princeton.edu/papers/abhattac-asplos2010.pdf	[Inter-Core Cooperative TLB Prefetchers]
+https://www.cs.rice.edu/CS/Architecture/docs/barr-isca10.pdf	[Pagewalk]
+https://depletionmode.com/2015/12/08/whats-in-an-address-ddr-memory-mapping/	[Understanding DDR Memory Mapping]
+https://en.wikipedia.org/wiki/Page_table
+https://software.intel.com/en-us/articles/branch-and-loop-reorganization-to-prevent-mispredicts

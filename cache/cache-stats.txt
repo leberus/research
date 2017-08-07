@@ -1,0 +1,102 @@
+
+
+== cache-without-pad ==
+
+cpu cycles unhalted
+
+vma      samples  %        image name               symbol name
+00400b53 7613     50.5344  cache-bouncing-without   inc_second
+  00400c3d 4458     58.5577
+  00400c40 1060     13.9236
+  00400c47 2095     27.5187
+00400a39 7451     49.4590  cache-bouncing-without   inc_first
+  00400b1f 4355     58.4485
+  00400b22 1022     13.7163
+  00400b28 2074     27.8352
+
+
+l1d misses:
+
+vma      samples  %        symbol name
+00400b53 2        100.000  inc_second
+  00400c3d 2        100.000
+
+
+3 100.000 :             sd->data2++;
+
+
+  2064 13.7116 :	for (i = 0; i < LOOPS_MAX; i++)
+  5372 35.6872 :		sd->data1++;
+               :	dump_schedstats(pid, tid);
+               :	
+               :	return NULL;
+               :}
+               :
+               :static void *inc_second(void *arg)
+               :{ /* inc_second total:   7616 50.5946 */
+               :	struct shared_data_struct *sd = (struct shared_data_struct *)arg;
+               :	pid_t pid = getpid(), tid = gettid();
+               :	cpu_set_t cmask;
+               :	register long i;
+               :	
+               :	/* set affinity */
+               :	CPU_ZERO(&cmask);
+               :	CPU_SET(1, &cmask);
+               :
+               :	if (unlikely(sched_setaffinity(0, sizeof(cmask), &cmask) < 0)) {
+               :		perror("could not set cpu affinity for current process.");
+               :		exit(1);
+               :	}
+               :
+               :	/* periodically increment second member of shared struct */
+  2119 14.0769 :	for (i = 0; i < LOOPS_MAX; i++)
+  5497 36.5176 :		sd->data2++;
+
+
+========================
+
+
+
+== cache-with-pad ==
+
+cpu cycles unhalted
+
+vma      samples  %        symbol name
+00400a39 5224     50.0000  inc_first
+  00400b1f 2148     41.1179
+  00400b22 1040     19.9081
+  00400b28 2036     38.9740
+00400b53 5224     50.0000  inc_second
+  00400c3d 2112     40.4288
+  00400c40 1093     20.9227
+  00400c47 2019     38.6485
+
+
+
+  1993 19.1028 :	for (i = 0; i < LOOPS_MAX; i++)
+  3230 30.9595 :		sd->data1++;
+               :	dump_schedstats(pid, tid);
+               :	
+               :	return NULL;
+               :}
+               :
+               :static void *inc_second(void *arg)
+               :{ /* inc_second total:   5210 49.9377 */
+               :	struct shared_data_struct *sd = (struct shared_data_struct *)arg;
+               :	pid_t pid = getpid(), tid = gettid();
+               :	cpu_set_t cmask;
+               :	register long i;
+               :	
+               :	/* set affinity */
+               :	CPU_ZERO(&cmask);
+               :	CPU_SET(1, &cmask);
+               :
+               :	if (unlikely(sched_setaffinity(0, sizeof(cmask), &cmask) < 0)) {
+               :		perror("could not set cpu affinity for current process.");
+               :		exit(1);
+               :	}
+               :
+               :	/* periodically increment second member of shared struct */
+  1998 19.1508 :	for (i = 0; i < LOOPS_MAX; i++)
+  3212 30.7869 :		sd->data2++;
+

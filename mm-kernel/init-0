@@ -1,0 +1,173 @@
+main(){			[arch/x86/boot/main.c]
+ detect_memory() { 	[arch/x86/boot/memory.c]
+
+	struct boot_e820_entry {
+        	__u64 addr;
+        	__u64 size;
+        	__u32 type;
+	} __attribute__((packed));
+
+        struct e820_table {
+        	__u32 nr_entries;
+        	struct e820_entry entries[E820_MAX_ENTRIES];
+	};
+
+	struct boot_e820_entry *desc = boot_params.e820_table;
+        static struct boot_e820_entry buf; /* static so it is zeroed */
+
+	intcall(0x15, &ireg, &oreg);
+	*desc++ = buf;
+
+	f.i
+		BIOS-e820: [mem 0x0000000000000000-0x00000000000907ff]
+ }
+
+ go_to_protected_mode() {
+  enable_a20(){}
+  setup_gdt() {
+    	#define GDT_ENTRY(flags, base, limit)                   \
+        ((((base)  & _AC(0xff000000,ULL)) << (56-24)) | \
+         (((flags) & _AC(0x0000f0ff,ULL)) << 40) |      \
+         (((limit) & _AC(0x000f0000,ULL)) << (48-16)) | \
+         (((base)  & _AC(0x00ffffff,ULL)) << 16) |      \
+         (((limit) & _AC(0x0000ffff,ULL))))
+
+	/* Simple and small GDT entries for booting only: */
+
+	#define GDT_ENTRY_BOOT_CS       2
+	#define GDT_ENTRY_BOOT_DS       3
+	#define GDT_ENTRY_BOOT_TSS      4
+	#define __BOOT_CS               (GDT_ENTRY_BOOT_CS*8)
+	#define __BOOT_DS               (GDT_ENTRY_BOOT_DS*8)
+	#define __BOOT_TSS              (GDT_ENTRY_BOOT_TSS*8)
+
+	static const u64 boot_gdt[] __attribute__((aligned(16))) = {
+                /* CS: code, read/execute, 4 GB, base 0 */
+                [GDT_ENTRY_BOOT_CS] = GDT_ENTRY(0xc09b, 0, 0xfffff),
+                /* DS: data, read/write, 4 GB, base 0 */
+                [GDT_ENTRY_BOOT_DS] = GDT_ENTRY(0xc093, 0, 0xfffff),
+                /* TSS: 32-bit tss, 104 bytes, base 4096 */
+                /* We only have a TSS here to keep Intel VT happy;
+                   we don't actually use it for anything. */
+                [GDT_ENTRY_BOOT_TSS] = GDT_ENTRY(0x0089, 4096, 103),
+        };
+
+	static struct gdt_ptr gdt;
+        gdt.len = sizeof(boot_gdt)-1;
+        gdt.ptr = (u32)&boot_gdt + (ds() << 4);
+        asm volatile("lgdtl %0" : : "m" (gdt));
+  }
+  protected_mode_jump() {
+        - enable protection mode
+	- set __BOOT_DS and __BOOT_TSS, set data segments for flat 32-bit mode
+	- set up task
+	- set up TR to make Intel VT happy
+ }
+ startup_32() {
+	- check at where we were loaded
+
+        leal    (BP_scratch+4)(%esi), %esp
+        call    1f
+1:      popl    %ebp
+        subl    $1b, %ebp			<-- phys address of startup_32
+
+	- create a stack
+
+        movl    $boot_stack_end, %eax
+        addl    %ebp, %eax
+        movl    %eax, %esp
+
+	- verify cpu supports longmode
+
+	call    verify_cpu
+        testl   %eax, %eax
+        jnz     no_longmode
+
+	- check if kernel should be relocated
+	- ebx -> address of kernel relocated
+	- enable PAE mode
+
+	- build early page tables [early-page-table-build]
+	- enable the boot page tables
+		leal    pgtable(%ebx), %eax
+		movl    %eax, %cr3
+
+	-enable long mode
+		movl    $MSR_EFER, %ecx
+		rdmsr
+	        btsl    $_EFER_LME, %eax
+        	wrmsr
+
+	- enable paging and protected mode
+	- call startup_64
+ }
+ startup_64() {
+	- setup data segments
+	- copy compressed kernels
+	- call extract_kernel
+ }
+ extract_kernel() {
+	- pick one valid memory region for decompressing the kernel
+	- parse kernel and relocate loadable segments into the valid memory region
+	- return to setup_64 and call *eax which should contain first LOAD segment
+		ffffffff81000000 <_stext>:
+ }
+ startup_64() {
+  __startup_64() {
+  	- fixup phys addresses in the page tables
+	- enable NX
+	- setup CR0
+	- setup stack
+		.quad  init_thread_union + THREAD_SIZE - SIZEOF_PTREGS
+	- setup gdt
+   x86_64_start_kernel() {
+	- BUGON addresses checks
+	- reset reset_early_page_tables
+	- clear bss
+	- clear_page init_top_pgt
+	- early_make_pgtable
+    start_kernel() {
+	setup_arch() {
+		- memblock_reserve from _text to _bss
+		- memblock_reserve ramdisk_image
+	  e820__memory_setup() {
+		- copy BIOS-supplied E820-map
+     	  }
+		- set init_mm.fields to right values
+		- set [code/data/bss]_resources.*
+	  x86_configure_nx() {
+		- set _PAGE_NX to __supported_pte_mask
+	  }
+		- get max_pfn
+			last_pfn = 0x24e000 max_arch_pfn = 0x400000000
+			max_possible_pfn = max_pfn;
+		- get max_low_pfn if max_pfn > 4GB
+			max_low_pfn = e820__end_of_low_ram_pfn();
+		- high_memory = __va(9GB)
+		- early_alloc_pgt_buf
+			extend_brk
+		- reserve_brk
+		- cleanup_highmap
+		- e820__memblock_setup, add to memblock all regions
+		- reserve_real_mode
+	   init_mem_mapping() {
+		- init_memory_mapping(0, ISA_END_ADDRESS)
+	    memory_map_top_down(){
+		- memblock_find_in_range from ISA_END_ADDRESS to 8GB free and not reserved
+		- init_range_memory_mapping(start, last_start);
+		- nit_range_memory_mapping(real_end, map_end);
+	    }
+		- load_cr3(swapper_pg_dir)
+		- __flush_tlb_all()
+	   }
+		- memblock_set_current_limit(get_max_mapped())
+	   initmem_init() { [mm/numa_64.c]
+		
+	   }
+          }
+	}
+    }
+   }	
+  } 
+ }
+}

@@ -1,0 +1,303 @@
+
+
+
+	* Uniform Memory Access
+
+	* Non-uniform Memory Access:
+		- Memory access time depends on the memory location relative to the processor
+		- A processor can access its own local memory faster than non-local memory
+		- NUMA factors: Extra time needed to access remote memory
+		- CPUs are organized into nodes; within a node time to access memory is uniform
+		or have a small numa factor
+
+
+	* Ram Types
+
+		* Static RAM
+			- one cell requires six transistors
+			- maintaining the state of the cell requires contanst power
+			- the cell state is available for reading almost immediately
+			once the WL is raired.
+			- cell state is stable, no refresh cycles are needed
+			[https://en.wikipedia.org/wiki/Static_random-access_memory]
+			
+
+		* Dynamic RAM
+			- one cell requires one transistor and one capacitor
+			- The capacitor needs to be charged/refreshed	
+			- Reading a cell causes the charge of the capacitor to be depleted
+		
+			* DRAM Access:
+			[https://depletionmode.com/2015/12/08/whats-in-an-address-ddr-memory-mapping/]
+
+				- Workflow: 
+					* Program selects a memory location using virtual address
+					* CPU translates virtual address to physical address
+					* Memory controller selects the RAM chip corresponding to
+					that address.
+					* To select the individual memory cell on the RAM chip,
+					parts of the physical address are passed on in the form
+					of a number of address lines.
+
+				
+				- Write more about its operations
+
+
+
+	* Cache:
+
+		* Exclusive cache [AMD/VIA]:
+			- Disadvantage:
+				- Eviction from L1d pushes the cache line down into L2 (and this goes all the way down)
+			- Advantage:
+				- Loading a new cache only has to deal with L1d, and not L2.
+
+		* Incluse cache:
+			- Each cache line in L1d is also present in L2, so eviction is much faster
+			- Having a L2 big enough overcomes the disadvantage of wasting memory for content
+			held in two places
+
+
+		* Cache coherence:
+			- Processors detect when another processor wants to read or write to a certain cache line
+			- If a write access is detected and the processor has a clean copy of the cache line,
+			this cache line is marked invalid. Future references will require the cache to be reloaded.
+			- If a processor has a dirty cache line, and a second processor wants to read that cache line,
+			since the memory is out-of-date, the second processor must get the cache line content from the
+			first processor.
+
+			- A dirty cache line is not present in any other processor's cache
+			- Clean copies of the same cache line can reside in arbitrarily many caches
+			
+
+		
+		* Performance:
+
+				Cycles
+		Register	<= 1
+		L1d		~3
+		L2		~14
+		Main Mem	~240
+
+
+
+		* Associativity:
+			
+			* Fully associative:
+				- Since the entry can go everywhere, processor will have to compare
+				every single entry of the cache, and this takes too long.
+				It only makes sense for really small caches, like some TLB.
+
+			* Direct-Mapped:
+				- Each tag maps to exactly one cache entry
+				- f.i: 
+			
+				Cache size: 4MB
+				Cache line size: 64bytes
+				Number entries: 65536
+
+
+				We need 22bits to address 4MB
+				To address 65536 entries we can use 16 bits [log2(65536) = 16]
+				we use the 6 lower bits for the index within each cache line
+
+
+				- Since each tag can just map to one entry, this only works if
+				the addresses used by the program are evenly distributed with respect
+				of the bits used for the direct mapping, if not some cache entries are heavily
+				used and therefore repeated evicted while others are barely used.
+				
+				
+			* Set associative:
+
+				- Tag and data storage are divided into sets, one if which is
+				selected by the address of a cache line
+				- Instead of only having one element for each set value in the cache,
+				a small number of the values is cached for the same set value
+				- Tags for all the set members are compared in parallel
+
+				 T       S          O
+				[tag][cache set][offset]
+
+				* Example
+
+	                        [L1d 8-way set associative]
+	
+	                        L1 cache size: 		4 MB size
+				Cache line size:	64 bytes
+				Cache lines:		4MB/64bytes = 65536
+	
+	                        ** Number of sets = number-cache-lines / number-ways-associativity
+	
+	                        65536 / 8 = 8192 sets  [ log2(8192) = 13, 8192 different indices , 13bits for index ]
+				8 sets per cache line since -> 65536 cache lines / 8192 sets in total = 8 sets
+	
+	
+	                        ** Cache line-offset length:
+	
+	                        log2(64bytes per cache line) = 2^6 = 64 [6bits for cache-line-offset]
+	
+	
+	                        ** Tag length:
+	
+	                        tag length = 32(bits address) - 6(bits block-offset) - 13(bits index) = 13bits
+
+
+		* Measurements of Cache Effects
+		
+			 [TODO]
+
+
+		* Write behavior
+
+			* Policies
+				- write-through: every write to the cache causes a write to the main memory
+				- write-back: cache line marked as dirty. When its dropped, CPU write it to memory.
+				- write-combining: multiple writes before the cache line is written out
+				- uncacheable: not mapped to RAM
+
+
+			* MESI cache coherence protocol
+			
+				- Modified: The local processor has modified the cache line.
+				The cache is required to write the data back to main memory before
+				permitting any read of the main memory state.
+				This is also implies it is the only copy in any cache.
+
+				- Exclusive: The cache line is not modified but known to not be loaded
+				into any other processor's cache. It may be changed a Shared state any time
+				in response to a read request, or to Modified when writing to it.
+
+
+				- Shared: The cache line is not modified and might exist in another
+				processor's cache.
+
+				- Invalid: The cache line is invalid, i.e. unused.
+
+
+				* Commands that can be issued by one processor node to the memory system:
+					- RFO (Request for ownership):
+						If there are copies in other caches, they must be invalidated.
+						If there is an owned copy, a INV instruct is sent to the owner.
+
+				* Transitions:
+
+				[initially all cache lines are empty and marked Invalid]
+
+				- Invalid state:
+				    - If data is loaded into the cache for writing, the state
+				    changes to Modified.
+				    - If data is loaded for reading, new state depends on whether
+				    another processor has the cache line loaded as well:
+                                         - yes: new state is Shared
+                                         - no:  new state Exclusive
+
+ 				- Modified state: 
+				  - if is read from or written to on the local processor: NO CHANGE
+				  - if second processor wants to:
+					- read from cache line: first processor sends the content of its cache to it 
+					  and then state goes to: Shared
+				          The data is also received and processed by the memory controller which
+				          stores the content in memory.
+    
+                                        - write to cache line: first processor sends the content of its cache to it 
+                                          and marks the cache line locally as: Invalid
+					  This is known as the Request for Ownership operation.
+
+				- Shared state: 
+				  - local processor reads from it: NO CHANGE
+				  - local processor writes to it, state goes to: Modified
+				    Possible copies of the cache line on other processors are marked as Invalid.
+				    Write operation must be accounced via RFO message
+				  - remote processor reads from it: NOCHANGE
+				  - remote processor wants to write: RFO and cache line marked as invalid
+
+				- Exclusive state:
+				  - local processor reads from it: NO CHANGE
+				  - local processor writes to it, state goes to: Modified
+		
+				
+				- RFO messages show up when:
+				  - A thread is migtrated from one processor to another
+				    and all the cache lines have to be moved over to the new processor once.
+				  - A cache line is truly needed in two different processors.
+
+
+
+		* Instruction Cache
+
+			- L1i: caches the decoded instructions (not the raw bytes)
+			       L1i in this case is called "trace cache"
+
+			- Trace caching:  allows the processor to skip over the first steps of
+					  the pipeline in case of a cache hit, which is good if
+					  the pipeline is stalled.
+
+			- L2/L3: code is cached in the byte sequence form
+
+			
+		* Best uses of L1i:
+
+			a) reduce the code footprint as much as possible. This has to be balanced 
+			with optimizations like loop un-rolling and inlining.
+			b) code execution should be linear without bubbles.
+			c) aligning code when it makes sense.
+
+			a1) Inline functions: can help as long as these functions are not called from
+			different places
+			a2) Code/block reordering:
+				- This can be achieved by having often-executed code linear in memory
+				and moving rarely-executed code to somewhere where instructions are not
+				prefetched
+				- One way to achieve this is to use __builtin_expect(long EXP, long C)
+			a3) Loop-unrolling helps since BTB (Branch Target Buffer) has limited fields.
+			So cutting off the loops could help it.
+
+			a4) compact loops for Loop Stream Detector
+			
+			b1) branch prediction: moving branches out of loops
+			b2) Buble
+			b3) Remove branches out of loop when possible
+
+
+		* Cache prefetching [https://en.wikipedia.org/wiki/Cache_prefetching]
+
+			- Can fetch either instructions or data into the cache:
+				- Data prefetch.: fetches data before is needed
+				- Instruction prefetch.: fetches instructions before they need to be executed
+
+			- Hardware vs software cache prefetching:
+				- Hardware based prefetch.: watches the stream of instructions or data being
+				requested by the running program, recoznizes the next few elements that
+				the program might need based on this stream and prefetches into the processor's
+				cache.
+
+				- Software based prefetch.: compiler insert additional prefetch instructions
+				during compilation.
+				Prefetching instructions can also be given by the developer.
+
+			- Methods of hardware prefetch.:
+				- Stream buffers:
+					- Developed based on the concept OBL(one block lookahead)
+					- Cache miss address (and k subsequent addresses) are fetched into
+					a separate buffer of depth k (stream buffer).
+					The processor then consumes data/instructions from the stream buffer if the
+					address associated with the prefetched blocks match the requested address
+					generated by the running program.
+					- Whenever the prefetch mechanism detects a miss on a memory block A,
+					it allocates a stream for prefetching successible blocks onward (A+1, A+2,...)
+					When processor consumes A+1, it's moved to the processor's cache.
+					- This pattern is called: Sequential Prefetching
+
+				- Strided Prefetching:
+					- Prefetch addresses that are x addresses ahead in the sequence.
+					- Mainly used when the consecutive blocks to be prefetched are X addresses apart.
+					- **More information**
+			
+		https://compas.cs.stonybrook.edu/course/cse502-s13/lectures/cse502-L3-memory-prefetching.pdf
+		https://compas.cs.stonybrook.edu/~nhonarmand/courses/sp16/cse502/slides/13-prefetch.pdf
+		https://www.abebooks.com/9781482211184/Fundamentals-Parallel-Multicore-Architecture-Chapman-1482211181/plp
+
+
+
+

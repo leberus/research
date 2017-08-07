@@ -1,0 +1,97 @@
+Call Trace:
+[<ffffffff8118ace3>] set_zone_contiguous+0x53/0x70
+[<ffffffff815d9f19>] __add_pages+0xa9/0x2c0
+[<ffffffff810624be>] arch_add_memory+0x6e/0xf0
+[<ffffffff815da30d>] add_memory_resource+0x8d/0x160
+[<ffffffff815da44d>] add_memory+0x6d/0xd0
+[<ffffffff813d3634>] acpi_memory_device_add+0x181/0x251
+[<ffffffff813946ce>] acpi_bus_attach+0xfd/0x19b
+[<ffffffff8139484f>] acpi_bus_scan+0x59/0x69
+[<ffffffff813949c7>] acpi_device_hotplug+0xd2/0x43e
+[<ffffffff8138db47>] acpi_hotplug_work_fn+0x1a/0x23
+[<ffffffff81093d1e>] process_one_work+0x14e/0x410
+[<ffffffff81094576>] worker_thread+0x116/0x490
+[<ffffffff81099a1d>] kthread+0xbd/0xe0
+[<ffffffff815e4f3f>] ret_from_fork+0x3f/0x70
+
+
+
+acpi_memory_device_add
+|->add_memory
+    |-> register_memory_resource
+	/*
+		struct resource *res;
+		res->name = "System RAM";
+		res->start = start;
+		res->end = start + size - 1;
+		res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY
+	*/
+    |-> add_memory_resource
+	/*
+		mem_hotplug_begin()
+		memblock_add_node()	<- add memory range
+	*/
+	|-> arch_add_memory
+		/*
+			init_memory_mapping(start, start + size)
+			{
+				kernel_physical_mapping_init()
+				add_pfn_range_mapped()
+			}
+		*/
+	     	|-> __add_pages
+			/*
+				start_sec = pfn_to_section_nr(phys_start_pfn)
+				end_sec = pfn_to_section_nr(phys_start_pfn + nr_pages - 1)
+				for (i = start_sec; i <= end_sec; i++)
+					__add_section(nid, section_nr_to_pfn(i), want_memblock)
+			*/
+			|-> __add_section
+				/*
+					sparse_add_one_section()
+					{
+						ms = __pfn_to_section(start_pfn)
+						ms->section_mem_map |= SECTION_MARKED_PRESENT
+						/* 
+							An error must have happened here!
+						*/
+					}
+					walk all pages per section
+					{
+						page = pfn_to_page(pfn)
+						set_page_node(page, nid)
+						SetPageReserved(page)
+					}
+					register_new_memory()
+					|->
+						/*
+							mem = find_memory_block(section)
+							if (mem)
+							{
+								mem->section_count++
+								put_device(&mem->dev)
+							} else {
+								init_memory_block()
+								{
+									/*
+										fill memory_block structure
+										register_memory(mem)
+										{
+											device_register()
+										}
+									*/
+								}
+							}
+						*/
+
+
+
+When /sys/devices/system/memory/memoryXX/state is set to online by .. udev or human?
+
+store_mem_state
+ |-> device_online
+      |-> memory_subsys_online
+           |-> memory_block_change_state
+                |-> memory_block_action
+                     |-> pages_correctly_reserved
+	 	     |-> online_pages			<-- check further

@@ -1,0 +1,116 @@
+
+
+
+
+lowmem_reserve[0-MAX_ZONES-1] = number of pages for reserved for GFP_KERNEL allocations
+
+
+
+
+* how is lowmem_reserve[ZONE] set
+* how is min/low/high mem computed?
+
+
+http://elixir.free-electrons.com/linux/v4.4/source/mm/vmscan.c#L1946
+
+localhost kernel: MEMBLOCK configuration:
+localhost kernel:  memory size = 0x00000001eb01c800 reserved size = 0x0000000001b191b4
+localhost kernel:  memory.cnt  = 0x3
+localhost kernel:  memory[0x0]        [0x0000000000001000-0x000000000008ffff], 0x000000000008f000 bytes flags: 0x0
+localhost kernel:  memory[0x1]        [0x0000000000100000-0x000000009d08cfff], 0x000000009cf8d000 bytes flags: 0x0
+localhost kernel:  memory[0x2]        [0x0000000100000000-0x000000024dffffff], 0x000000014e000000 bytes flags: 0x0
+localhost kernel:  reserved.cnt  = 0x4
+localhost kernel:  reserved[0x0]        [0x00000000000fcb50-0x00000000000fccf3], 0x00000000000001a4 bytes flags: 0x0
+localhost kernel:  reserved[0x1]        [0x00000000000fcd60-0x00000000000fcd6f], 0x0000000000000010 bytes flags: 0x0
+localhost kernel:  reserved[0x2]        [0x0000000016000000-0x00000000170bbfff], 0x00000000010bc000 bytes flags: 0x0
+localhost kernel:  reserved[0x3]        [0x0000000036b35000-0x0000000037591fff], 0x0000000000a5d000 bytes flags: 0x0
+localhost kernel: memblock_reserve: [0x0000000000090800-0x00000000000fffff] reserve_bios_regions+0x5b/0x5d
+localhost kernel: memblock_reserve: [0x0000000000001000-0x000000000000ffff] setup_bios_corruption_check+0xf6/0x18f
+localhost kernel: Scanning 1 areas for low memory corruption
+localhost kernel: memblock_reserve: [0x000000000008a000-0x000000000008ffff] reserve_real_mode+0x6f/0x7f
+localhost kernel: Base memory trampoline at [ffff8fd4c008a000] 8a000 size 24576
+localhost kernel: memblock_reserve: [0x0000000000000000-0x000000000000ffff] setup_arch+0x6fd/0xc96
+localhost kernel: Using GB pages for direct mapping
+localhost kernel: BRK [0x170b0000, 0x170b0fff] PGTABLE
+localhost kernel: BRK [0x170b1000, 0x170b1fff] PGTABLE
+localhost kernel: BRK [0x170b2000, 0x170b2fff] PGTABLE
+localhost kernel: BRK [0x170b3000, 0x170b3fff] PGTABLE
+localhost kernel: BRK [0x170b4000, 0x170b4fff] PGTABLE
+localhost kernel: memblock_reserve: [0x000000024dfff000-0x000000024dffffff] alloc_low_pages+0xa6/0x130
+localhost kernel: memblock_reserve: [0x000000024dffe000-0x000000024dffefff] alloc_low_pages+0xa6/0x130
+
+
+
+localhost kernel: No NUMA configuration found
+localhost kernel: Faking a node at [mem 0x0000000000000000-0x000000024dffffff]
+localhost kernel: NODE_DATA(0) allocated [mem 0x24dfea000-0x24dffffff]
+
+localhost kernel: Zone ranges:
+localhost kernel:   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+localhost kernel:   DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+localhost kernel:   Normal   [mem 0x0000000100000000-0x000000024dffffff]
+localhost kernel:   Device   empty
+
+localhost kernel: Movable zone start for each node
+
+localhost kernel: Early memory node ranges
+localhost kernel:   node   0: [mem 0x0000000000001000-0x000000000008ffff]
+localhost kernel:   node   0: [mem 0x0000000000100000-0x000000009d08cfff]
+localhost kernel:   node   0: [mem 0x0000000100000000-0x000000024dffffff]
+
+
+localhost kernel: Initmem setup node 0 [mem 0x0000000000001000-0x000000024dffffff]
+localhost kernel: On node 0 totalpages: 2011164
+
+May 04 08:19:02 localhost kernel:   DMA zone: 64 pages used for memmap
+May 04 08:19:02 localhost kernel:   DMA zone: 21 pages reserved
+May 04 08:19:02 localhost kernel:   DMA zone: 3983 pages, LIFO batch:0
+May 04 08:19:02 localhost kernel:   DMA32 zone: 9987 pages used for memmap
+May 04 08:19:02 localhost kernel:   DMA32 zone: 639117 pages, LIFO batch:31
+May 04 08:19:02 localhost kernel:   Normal zone: 21376 pages used for memmap
+May 04 08:19:02 localhost kernel:   Normal zone: 1368064 pages, LIFO batch:31
+
+
+PAGES_PER_SECTION = 1UL << PFN_SECTION_SHIF  (PFN_SECTION_SHIF = 27 - 12) = 32768 pages per section
+
+memblock_reserved_memory_within() ********** check!!
+
+struct free_area {
+	struct list_head	free_list[MIGRATE_TYPES];
+	unsigned long		nr_free;
+};
+
+
+setup_arch()
+ init_mem_mapping()
+ initmem_init()
+  x86_numa_init()
+   dummy_numa_init()
+    node_set()
+    numa_add_memblk()
+
+ x86_init.paging.pagetable_init() (paging_init) 
+  zone_sizes_init()
+   free_area_init_nodes()
+    free_area_init_node()  [init pgdat struct]
+     calculate_node_totalpages()
+     alloc_node_mem_map() if enabled!       ************* check!!
+     reset_deferred_meminit()
+     free_area_init_core()		 ********** try to check memmap_pages = calc_memmap_size(size, realsize)
+      calc_memmap_size()
+      zone_pcp_init()
+      set_pageblock_order()
+      setup_usemap()
+      init_currently_empty_zone()
+       zone_init_free_lists()
+      memmap_init()
+       update_defer_init()		********** defer the other
+       [__init_single_page
+        set_pageblock_migratetype]
+	or
+       [__init_single_pfn]
+        
+       
+      
+
+     

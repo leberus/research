@@ -1,0 +1,40 @@
+ 6 page tables
+
+	PML4[1]	PDP[1]	PD[4]
+	[1]	[4]	[2048]
+
+pgtable = 6*4096
+
+PML4[0..4095]
+PDP[4095..8191]
+PD[8192..24575]
+
+PML4:
+	/* Build Level 4 */
+	leal    pgtable + 0(%ebx), %edi
+	leal    0x1007 (%edi), %eax
+	movl    %eax, 0(%edi)			<-- address of PDP in PML4
+
+PDP-PD:
+	/* Build Level 3 */
+	leal    pgtable + 0x1000(%ebx), %edi	<-- address of PDP
+	leal    0x1007(%edi), %eax		<- address of PD
+	movl    $4, %ecx
+1:	movl    %eax, 0x00(%edi)		<-- address of PD[+4096] to PDP
+	addl    $0x00001000, %eax		<-- +4096
+	addl    $8, %edi			<- PPD+8
+	decl    %ecx
+	jnz    1b
+
+PTE:
+	/* Build Level 2 */
+	leal    pgtable + 0x2000(%ebx), %edi	<-- address of PD
+	movl    $0x00000183, %eax
+	movl    $2048, %ecx
+1:	movl    %eax, 0(%edi)
+	addl    $0x00200000, %eax		<-- address of PD + 2MB
+	addl    $8, %edi
+	decl    %ecx
+	jnz    1b
+
+2048 pages * 2MB per page = 4GB of memory mapping

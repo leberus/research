@@ -1,4 +1,4 @@
-
+[https://en.wikipedia.org/wiki/CPU_cache]
 
 * Multilevel caching
 
@@ -240,12 +240,6 @@
 	* Cache design [http://cseweb.ucsd.edu/classes/fa10/cse240a/pdf/08/CSE240A-MBT-L15-Cache.ppt.pdf]
 				
 
-	* [[TLB]]
-
-
-		* Content-addressable memory [https://en.wikipedia.org/wiki/Content-addressable_memory]:
-			
-			
 	* Instruction-level parallelism [https://en.wikipedia.org/wiki/Instruction-level_parallelism]:
 	(how many instructions can be excuted simultaneously)
 
@@ -300,7 +294,7 @@
 			
 
 
-	** Instruction Pipeline [https://en.wikipedia.org/wiki/Instruction_pipelining]:
+	** Instruction Pipeline [https://en.wikipedia.org/wiki/Instruction_pipelining]:	XX
 		
 		* Implements a form of parallelism called instruction-level parallelism
 		within a single processor
@@ -311,19 +305,30 @@
 		** Instruction cycle [https://en.wikipedia.org/wiki/Instruction_cycle]:
 
 	
-	** Branch prediction [https://en.wikipedia.org/wiki/Branch_predictor]:
+	** Branch prediction [https://en.wikipedia.org/wiki/Branch_predictor]: 		XX
 
 
 
-	* Branch misprediction [https://en.wikipedia.org/wiki/Branch_misprediction]:
+	* Branch misprediction [https://en.wikipedia.org/wiki/Branch_misprediction]: 	XX
 
 		* When CPU mispredicts the next instruction to process in branch prediction.
 		The partially processed instructions in the pipeline after the branch have to be discarded
 		and the pipeline has to start over at the correct branch when a branch misprediction is detected.
 			
 
-	* Hyper-threading [https://en.wikipedia.org/wiki/Hyper-threading]
+	* Hyper-threading [https://en.wikipedia.org/wiki/Hyper-threading]		XX
 		
 
-		
-		
+[Links]
+
+https://en.wikipedia.org/wiki/Page_table
+https://en.wikipedia.org/wiki/Random-access_memory
+https://en.wikipedia.org/wiki/Instruction_pipelining
+https://en.wikipedia.org/wiki/Instruction_cycle
+https://en.wikipedia.org/wiki/Branch_predictor
+
+
+[info]
+
+http://ask.xmodulo.com/check-cpu-info-linux.html
+http://homepage.divms.uiowa.edu/~ghosh/4-1-10.pdf
